@@ -13,14 +13,13 @@ RegisterNUICallback('main:mouse_event', function(data, cb)
 end)
 
 local function requestModel(model, timeout)
-    local hash = type(model) == 'string' and joaat(model) or model
-    return lib.requestModel(hash, timeout or 10000)
+    return lib.requestModel(model, timeout or 10000)
 end
 
 local function createLocalPed(model, coords, heading)
     local hash = type(model) == 'string' and joaat(model) or model
     local x, y, z = coords.x, coords.y, coords.z
-    local ped = CreatePed(4, hash, x, y, z, heading or 0.0, false, false)
+    local ped = CreatePed(1, hash, x, y, z, heading or 0.0, false, false)
     SetEntityAsNoLongerNeeded(ped)
     return ped
 end
@@ -38,7 +37,7 @@ local function selectorSetupCamera()
     local camera = CreateCam('DEFAULT_SCRIPTED_CAMERA', true)
     SetCamCoord(camera, cfg.coords.x, cfg.coords.y, cfg.coords.z)
     SetCamRot(camera, cfg.rotation.x, cfg.rotation.y, cfg.rotation.z, 2)
-    RenderScriptCams(true, false, false, true, false)
+    RenderScriptCams(true, false, 0, true, false)
     Data.selector.camera = camera
 end
 
@@ -67,7 +66,6 @@ local function selectorCreatePed(id, data)
     SetEntityCoords(ped, cfg.coords.x, cfg.coords.y, cfg.coords.z, false, false, false, false)
     SetEntityHeading(ped, cfg.heading)
     SetEntityInvincible(ped, false)
-
     if not empty then
         if Config.framework == 'qbx_core' then
             if data.skin and next(data.skin) then
@@ -134,11 +132,8 @@ function Selector.StartHover()
     selectorRunHover()
 end
 
----@param isSecondary? boolean Skip framework unload if true
 ---@param existingCamera? number Reuse existing camera instead of creating new one
-function Selector.Load(isSecondary, existingCamera)
-    local secondary = isSecondary or false
-    if not secondary then Framework.onOpenSelector() end
+function Selector.Load(existingCamera)
     Framework.getCharacters(function(args)
         if args then Selector.Setup(args, existingCamera) end
     end)
@@ -522,7 +517,7 @@ RegisterNetEvent('qbx_core:client:playerLoggedOut', function()
     SetEntityVisible(ped, false, false)
     FreezeEntityPosition(ped, true)
 
-    Selector.Load(true)
+    Selector.Load()
 
     local waitStart = GetGameTimer()
     while not Data.selector or not Data.selector.camera do

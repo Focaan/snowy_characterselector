@@ -125,10 +125,6 @@ end
 
 local adapters = {
     ['qbx_core'] = {
-        onOpenSelector = function()
-            TriggerEvent('QBCore:Client:OnPlayerUnload')
-            Wait(2000)
-        end,
         getCharacters = function(cb)
             CreateThread(function()
                 local data = lib.callback.await('snowy_characterselector:server:getCharacters', false)
@@ -153,9 +149,11 @@ local adapters = {
         triggerSpawnAfterLoad = function(citizenId)
             if GetResourceState('qbx_apartments'):find('start') then
                 TriggerEvent('apartments:client:setupSpawnUI', citizenId)
-            elseif GetResourceState('qbx_spawn'):find('start') and not Config.Spawn.defaultSpawn then
+            elseif GetResourceState('qbx_spawn'):find('start') and Config.Spawn.useCustomSpawn then
                 TriggerEvent('qb-spawn:client:setupSpawns', citizenId)
                 TriggerEvent('qb-spawn:client:openUI', true)
+            elseif Config.Spawn.useCustomSpawn then
+                Config.Spawn.customSpawn(citizenId)
             end
         end,
     },
@@ -171,14 +169,6 @@ function Framework.getCharacters(cb)
         return
     end
     adapter.getCharacters(cb)
-end
-
-function Framework.onOpenSelector()
-    local key = Config.framework
-    local adapter = adapters[key]
-    if adapter and adapter.onOpenSelector then
-        adapter.onOpenSelector()
-    end
 end
 
 ---@param characterId number|string

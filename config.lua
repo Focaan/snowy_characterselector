@@ -106,11 +106,16 @@ Config.Gender = {
 
 
 Config.Spawn = {
-    useCustomSpawn = true, -- if false it will not spawn the player, instead initiate the event itself for any spawn selectors etc to spawn the player
+    useCustomSpawn = true, -- if true it will not spawn the player
     defaultSpawn = {
         coords = vec3(-542.3136, -208.9639, 37.6498),
         heading = 209.9319
-    }
+    },
+    ---Custom spawn function, provides citizenId if your spawn selector needs it
+    ---@param citizenId any
+    customSpawn = function(citizenId)
+        TriggerEvent('qb-spawn:client:setupSpawn')
+    end
 }
 
 

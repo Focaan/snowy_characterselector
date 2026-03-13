@@ -384,7 +384,7 @@ function Creator.Method(methodType, data)
             SetNuiFocus(true, true)
             Selector.StartHover()
         else
-            Selector.Load(false, camera)
+            Selector.Load(camera)
         end
         return
     end
@@ -462,7 +462,7 @@ function Creator.Method(methodType, data)
             end
             Creator.Remove()
             Wait(500)
-            Selector.Load(true)
+            Selector.Load()
         end)
     end
 end
